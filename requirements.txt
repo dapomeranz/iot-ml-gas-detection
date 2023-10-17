@@ -1,1 +1,9 @@
 python-dotenv
+mqtt-paho
+jupyternotebooks
+pandas
+numpy
+sklearn
+sktime
+pickle
+python-dotenv
