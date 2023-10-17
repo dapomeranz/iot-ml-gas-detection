@@ -1,9 +1,7 @@
 python-dotenv
-mqtt-paho
-jupyternotebooks
+paho-mqtt
+jupyterlab
 pandas
 numpy
-sklearn
+scikit-learn
 sktime
-pickle
-python-dotenv
