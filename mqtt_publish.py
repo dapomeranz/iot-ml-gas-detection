@@ -47,4 +47,4 @@ while True:
         payload=next(generator_next_data_row()),
         qos=0,
     )
-    time.sleep(0.05)
+    time.sleep(1)

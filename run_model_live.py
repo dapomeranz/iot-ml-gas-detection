@@ -44,7 +44,9 @@ def on_message(client, userdata, msg):
     cur.append(data["temp"])
     cur.append(data["humidity"])
     current_data.append(cur)
-    if len(current_data) == 480:
+    ## Once the data collection gets to 120 rows, we can start predicting
+    ## Then remove the first 5 rows and the data will gather 5 more points for the next prediction
+    if len(current_data) == 120:
         current_data = np.array(current_data)
         current_data = current_data[np.newaxis, ...]
         print("Model is predicting: ", model.predict(current_data)[0])
@@ -53,7 +55,7 @@ def on_message(client, userdata, msg):
             payload=json.dumps({"data": model.predict(current_data)[0]}),
             qos=0,
         )
-        current_data = []
+        del current_data[0:5]
 
 
 client = paho.Client(client_id="", userdata=None, protocol=paho.MQTTv311)
