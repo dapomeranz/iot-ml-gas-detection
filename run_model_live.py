@@ -51,7 +51,7 @@ def on_message(client, userdata, msg):
         current_data = current_data[np.newaxis, ...]
         print("Model is predicting: ", model.predict(current_data)[0])
         client.publish(
-            "mox_sensors/predicted_state",
+            f"{os.getenv('MQTT_TOPIC_PREFIX')}/predicted_state",
             payload=json.dumps({"data": model.predict(current_data)[0]}),
             qos=0,
         )
@@ -61,12 +61,15 @@ def on_message(client, userdata, msg):
 client = paho.Client(client_id="", userdata=None, protocol=paho.MQTTv311)
 client.on_connect = on_connect
 
-client.tls_set(tls_version=mqtt.client.ssl.PROTOCOL_TLS)
-client.username_pw_set(os.getenv("MQTT_USERNAME"), os.getenv("MQTT_PASSWORD"))
+## NOT NEEDED FOR PUBLIC BROKER
+# from paho import mqtt
+# client.tls_set(tls_version=mqtt.client.ssl.PROTOCOL_TLS)
+# client.username_pw_set(os.getenv("MQTT_USERNAME"), os.getenv("MQTT_PASSWORD"))
+
 client.connect(os.getenv("MQTT_HOST"), int(os.getenv("MQTT_PORT")))
 client.on_subscribe = on_subscribe
 client.on_message = on_message
 
-client.subscribe("mox_sensors/#", qos=1)
+client.subscribe(f"{os.getenv('MQTT_TOPIC_PREFIX')}/data")
 
 client.loop_forever()
