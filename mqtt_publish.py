@@ -45,4 +45,4 @@ while True:
         f"{os.getenv('MQTT_TOPIC_PREFIX')}/data",
         payload=next(generator_next_data_row()),
     )
-    time.sleep(0.2)
+    time.sleep(0.02)
