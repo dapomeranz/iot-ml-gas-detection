@@ -23,7 +23,7 @@ def on_message(client, userdata, msg):
     print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
 
 
-client = paho.Client(client_id="", userdata=None, protocol=paho.MQTTv311)
+client = paho.Client()
 client.on_connect = on_connect
 
 ## NOT NEEDED FOR PUBLIC BROKER
@@ -45,4 +45,4 @@ while True:
         f"{os.getenv('MQTT_TOPIC_PREFIX')}/data",
         payload=next(generator_next_data_row()),
     )
-    time.sleep(1)
+    time.sleep(0.2)

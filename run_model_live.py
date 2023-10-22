@@ -1,14 +1,22 @@
 import paho.mqtt.client as paho
 import os
-import pickle
+from sktime.base import load
 import json
 import numpy as np
-from paho import mqtt
 from dotenv import load_dotenv
 
 load_dotenv()
 
-model = pickle.load(open("trained_model", "rb"))
+model = load("trained_sktime_model")
+
+lookup = np.loadtxt("data/HT_Sensor_metadata.dat", skiprows=1, dtype=str)
+
+
+def get_class(data):
+    if data["time"] < 0:
+        return "background"
+    ## lookup data["id"] in the first column of the lookup and return the 3rd column
+    return lookup[lookup[:, 0] == data["id"]][0][2]
 
 
 # setting callbacks for different events to see if it works, print the message etc.
@@ -47,18 +55,19 @@ def on_message(client, userdata, msg):
     ## Once the data collection gets to 120 rows, we can start predicting
     ## Then remove the first 5 rows and the data will gather 5 more points for the next prediction
     if len(current_data) == 120:
-        current_data = np.array(current_data)
-        current_data = current_data[np.newaxis, ...]
-        print("Model is predicting: ", model.predict(current_data)[0])
+        np_array = np.array(current_data)
+        np_array = np_array[np.newaxis, ...]
+        prediction = model.predict(np_array)[0]
+        print("Model is predicting: ", prediction)
+        print("Actual current state: ", get_class(data))
         client.publish(
             f"{os.getenv('MQTT_TOPIC_PREFIX')}/predicted_state",
-            payload=json.dumps({"data": model.predict(current_data)[0]}),
-            qos=0,
+            payload=json.dumps({"data": prediction}),
         )
-        del current_data[0:5]
+        del current_data[0:60]
 
 
-client = paho.Client(client_id="", userdata=None, protocol=paho.MQTTv311)
+client = paho.Client()
 client.on_connect = on_connect
 
 ## NOT NEEDED FOR PUBLIC BROKER
