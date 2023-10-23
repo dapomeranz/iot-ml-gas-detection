@@ -53,7 +53,7 @@ def on_message(client, userdata, msg):
     cur.append(data["humidity"])
     current_data.append(cur)
     ## Once the data collection gets to 120 rows, we can start predicting
-    ## Then remove the first 5 rows and the data will gather 5 more points for the next prediction
+    ## Then remove the first 60 rows and the data will gather 60 more points for the next prediction
     if len(current_data) == 120:
         np_array = np.array(current_data)
         np_array = np_array[np.newaxis, ...]
