@@ -15,6 +15,9 @@ lookup = np.loadtxt("data/HT_Sensor_metadata.dat", skiprows=1, dtype=str)
 def get_class(data):
     if data["time"] < 0:
         return "background"
+    length_of_time = lookup[lookup[:, 0] == str(data["id"])][0][4]
+    if data["time"] > length_of_time:
+        return "background"
     ## lookup data["id"] in the first column of the lookup and return the 3rd column
     return lookup[lookup[:, 0] == str(data["id"])][0][2]
 
